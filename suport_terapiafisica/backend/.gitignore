@@ -1,0 +1,13 @@
+# Variables de entorno — nunca subir a GitHub
+.env
+
+# Entorno virtual de Python — pesa mucho y no es necesario
+venv/
+
+# Archivos temporales de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Archivos de VS Code
+.vscode/
