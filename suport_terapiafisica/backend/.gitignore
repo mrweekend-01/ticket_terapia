@@ -1,3 +1,4 @@
+# Created by venv; see https://docs.python.org/3/library/venv.html
 # Variables de entorno — nunca subir a GitHub
 .env
 
@@ -9,5 +10,5 @@ __pycache__/
 *.pyc
 *.pyo
 
-# Archivos de VS Code
+# Archivos de VS Code aaaaa
 .vscode/
