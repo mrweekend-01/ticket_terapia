@@ -42,3 +42,5 @@ class TicketResponse(BaseModel):
 class MedicoResponse(BaseModel):
     persona_cod: int        # código único del médico (para guardar en BD)
     nombre_completo: str    # nombre para mostrar en pantalla
+
+# UN CAMBIASOOO 
