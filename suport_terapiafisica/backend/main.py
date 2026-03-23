@@ -79,6 +79,8 @@ async def inicio():
 # Busca un ticket por su código
 # Ejemplo: GET http://localhost:8000/ticket/103520
 @app.get("/ticket/{codigo}")
+
+
 async def obtener_ticket(
     codigo: int,
     db: AsyncSession = Depends(get_db)
@@ -179,3 +181,41 @@ async def listar_medicos(db: AsyncSession = Depends(get_db)):
     medicos = result.mappings().all()
 
     return [dict(m) for m in medicos]
+
+# ── GET /ticket/{codigo}/sesiones ─────────────────────────────
+# Devuelve TODAS las sesiones programadas de un ticket
+# Ejemplo: GET http://localhost:8000/ticket/103520/sesiones
+@app.get("/ticket/{codigo}/sesiones")
+async def obtener_sesiones(
+    codigo: int,
+    db: AsyncSession = Depends(get_db)
+):
+    query = text("""
+        SELECT
+            tts.tratamiento_sesion_tcod,
+            tts.tratamiento_sesion_fprogramada,
+            tts.tratamiento_sesion_pacod,
+            TRIM(
+                tp.persona_nmb1 || ' ' ||
+                COALESCE(tp.persona_nmb2, '') || ' ' ||
+                tp.persona_apep || ' ' ||
+                tp.persona_apem
+            ) AS nombre_medico
+        FROM tbl_tratamiento_sesion tts
+        INNER JOIN tbl_persona tp
+            ON tp.persona_cod = tts.tratamiento_sesion_pacod
+        WHERE tts.tratamiento_sesion_tcod = :codigo
+        ORDER BY tts.tratamiento_sesion_fprogramada DESC
+    """)
+
+    result = await db.execute(query, {"codigo": codigo})
+    sesiones = result.mappings().all()
+
+    # Si no encontró ninguna sesión devuelve error 404
+    if not sesiones:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No se encontraron sesiones para el ticket {codigo}"
+        )
+
+    return [dict(s) for s in sesiones]
