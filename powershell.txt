@@ -1,0 +1,29 @@
+Arrancar al iniciar windows
+
+$action = New-ScheduledTaskAction -Execute "C:\Hema Suport\suport_terapiafisica\iniciar.bat"
+$trigger = New-ScheduledTaskTrigger -AtStartup
+$settings = New-ScheduledTaskSettingsSet -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)
+Register-ScheduledTask -TaskName "HemaSuport-Backend" -Action $action -Trigger $trigger -RunLevel Highest -Force
+
+
+Tarea 2 — Reiniciar a las 12am:
+
+
+$action2 = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-Command Stop-Process -Name uvicorn -Force"
+$trigger2 = New-ScheduledTaskTrigger -Daily -At "00:00"
+Register-ScheduledTask -TaskName "HemaSuport-Reinicio" -Action $action2 -Trigger $trigger2 -RunLevel Highest -Force
+```
+
+---
+
+### ¿Cómo funciona?
+```
+Windows inicia
+      ↓
+Tarea arranca iniciar.bat automáticamente
+      ↓
+Backend corriendo en puerto 8001
+      ↓
+12:00am → Windows mata uvicorn
+      ↓
+Tarea de arranque detecta que se cerró → reinicia solo
